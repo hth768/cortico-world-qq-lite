@@ -1,0 +1,55 @@
+{
+  "name": "cortico-world-qq-lite",
+  "version": "0.2.1",
+  "description": "轻量化 QQ 世界基础包（Cortico）。提供连接与监听、实时事件分发、监听名单、配置基础设施与提示词模板机制，并暴露插件宿主 API，供功能包（cortico-world-qq-*）按需挂载。已剔除 voxcpm 侧车、语音电话、桌宠、CUA。",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "files": [
+    "src",
+    "definition.ts",
+    "manifest.ts",
+    "prompts",
+    "describe.json",
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hth768/cortico-world-qq-lite.git"
+  },
+  "homepage": "https://github.com/hth768/cortico-world-qq-lite#readme",
+  "bugs": {
+    "url": "https://github.com/hth768/cortico-world-qq-lite/issues"
+  },
+  "license": "MIT",
+  "keywords": [
+    "cortico-world",
+    "qq",
+    "onebot",
+    "napcat",
+    "lite"
+  ],
+  "cortico": {
+    "kind": "world",
+    "api": 6,
+    "label": "QQ_bot_lite",
+    "webUiClient": "dist/console.js",
+    "describe": "describe.json"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/ws": "^8.5.13",
+    "typescript": "^5.7.0"
+  }
+}
