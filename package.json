@@ -1,6 +1,6 @@
 {
   "name": "cortico-world-qq-lite",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "轻量化 QQ 世界基础包（Cortico）。提供连接与监听、实时事件分发、监听名单、配置基础设施与提示词模板机制，并暴露插件宿主 API，供功能包（cortico-world-qq-*）按需挂载。已剔除 voxcpm 侧车、语音电话、桌宠、CUA。",
   "type": "module",
   "main": "./src/index.ts",
