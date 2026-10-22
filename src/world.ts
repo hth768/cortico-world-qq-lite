@@ -6,7 +6,7 @@
  *  - 把入站消息规整为 QQContext，按监听名单 + 投递门控决定是否送入主 session，并分发给功能包事件处理器；
  *  - 通过 outputTap 把主 session 的助手输出发回对应 QQ 会话；
  *  - 聚合功能包注册的工具 / 提示词片段 / 环境变量；
- *  - 按部署配置 worlds.qqbot.features 动态加载功能包（cortico-world-qq-*），调用其 activate(host)。
+ *  - 按部署配置 worlds.qqbot.features 动态加载功能包（hth-qq-*），调用其 activate(host)。
  *
  * 已剔除：voxcpm 侧车、语音电话（call）、桌宠（pet）、CUA（cua）——它们属于独立功能包或不存在于基础包。
  */
@@ -49,10 +49,14 @@ interface StartOpts {
 
 const ENV_PROMPT_FILE = fileURLToPath(new URL('../prompts/env.md', import.meta.url));
 
-/** npm 上不属于"本体世界包"的 qq 功能包集合，搜索时排除它们（只列可挂载的功能包）。 */
+/** npm 上不属于"本体世界包"的 qq 功能包集合，搜索时排除它们（只列可挂载的 hth-qq-* 功能包）。 */
 const MAIN_QQ_WORLDS = new Set<string>([
+  // 旧 cortico-world 前缀本体世界包（兼容性保留）
   'cortico-world-qq', 'cortico-world-qq-lite', 'cortico-world-qq-final',
   'cortico-world-qq-final-beta', 'cortico-world-qq-better', 'cortico-oh-my-qq-world',
+  // 新 hth 前缀本体世界包（重命名为 hth-qq-* 后需排除，避免被当成功能包）
+  'hth-qq', 'hth-qq-lite', 'hth-qq-final',
+  'hth-qq-final-beta', 'hth-qq-better', 'hth-oh-my-qq-world',
 ]);
 
 function isMentioned(ev: OneBotMessage, selfId: number): boolean {
@@ -371,11 +375,11 @@ export class QQWorld implements World, WorldBridge {
     return assembleSystemPrefix(this.hostImpl, context);
   }
 
-  // ── 功能模块市场：发现 / 安装 / 移除 cortico-world-qq-* 功能包（与 Cortico 扩展市场一致）──
+  // ── 功能模块市场：发现 / 安装 / 移除 hth-qq-* 功能包（与 Cortico 扩展市场一致）──
 
   /**
-   * 功能市场固定走官方 npm 源。原因：cortico-world 关键字与 Cortico 官方扩展市场均以
-   * registry.npmjs.org 为准；用户镜像（如 npmmirror）对 `keywords:cortico-world` 搜索返回为空，
+   * 功能市场固定走官方 npm 源。原因：hth-qq 关键字与 Cortico 官方扩展市场均以
+   * registry.npmjs.org 为准；用户镜像（如 npmmirror）对 `keywords:hth-qq` 搜索返回为空，
    * 会导致市场搜不到任何功能包。故这里直接返回官方源，安装同理强制 --registry。
    */
   private async npmRegistry(): Promise<string> {
@@ -398,7 +402,7 @@ export class QQWorld implements World, WorldBridge {
     });
   }
 
-  /** 扫描本地已部署 / link 的 cortico-world-qq-* 功能包（extensions/packages 与 extensions/node_modules）。 */
+  /** 扫描本地已部署 / link 的 hth-qq-* 功能包（extensions/packages 与 extensions/node_modules）。 */
   private localFeaturePackages(): FeatureHit[] {
     const roots = [
       join(this.packageDir, 'node_modules'),               // 本包自己的 node_modules（featureInstall 拷入处）
@@ -410,8 +414,8 @@ export class QQWorld implements World, WorldBridge {
       let entries: string[] = [];
       try { entries = fs.readdirSync(root); } catch { continue; }
       for (const name of entries) {
-        if (!name.startsWith('cortico-world-qq')) continue;
-        if (name === 'cortico-world-qq-lite') continue;
+        if (!name.startsWith('hth-qq-')) continue;
+        if (name === 'cortico-world-qq-lite' || name === 'hth-qq-lite') continue;
         if (MAIN_QQ_WORLDS.has(name)) continue;
         if (found.has(name)) continue;
         let meta: { version?: string; description?: string; keywords?: string[] };
@@ -431,7 +435,7 @@ export class QQWorld implements World, WorldBridge {
   }
 
   /**
-   * 发现 cortico-world-qq-* 功能包：先列本地已部署 / link 的包（如 sticker/voice/qzone/proactive…），
+   * 发现 hth-qq-* 功能包：先列本地已部署 / link 的包（如 sticker/voice/qzone/proactive…），
    * 再补 npm 上已发布的包。registry 在 keywords 过滤下不缩小结果，故按名称前缀 + 排除本体包后，
    * 客户端再用 text 做二次过滤。
    */
@@ -443,7 +447,7 @@ export class QQWorld implements World, WorldBridge {
     const registry = await this.npmRegistry();
     const seen = new Set<string>();
     for (let from = 0; from < 80; from += 20) {
-      const url = `${registry}/-/v1/search?text=${encodeURIComponent('keywords:cortico-world')}&size=20&from=${from}`;
+      const url = `${registry}/-/v1/search?text=${encodeURIComponent('keywords:hth-qq')}&size=20&from=${from}`;
       let data: { objects?: Array<{ package: { name?: string; version?: string; description?: string; keywords?: string[]; links?: { npm?: string } } }> };
       try {
         const resp = await fetch(url);
@@ -454,7 +458,7 @@ export class QQWorld implements World, WorldBridge {
       for (const obj of objects) {
         const p = obj.package;
         if (!p.name || !p.version) continue;
-        if (!p.name.startsWith('cortico-world-qq')) continue;
+        if (!p.name.startsWith('hth-qq-')) continue;
         if (MAIN_QQ_WORLDS.has(p.name)) continue;
         if (seen.has(p.name)) continue;
         seen.add(p.name);
@@ -500,7 +504,7 @@ export class QQWorld implements World, WorldBridge {
    * 下载后再并入 packageDir/node_modules，使 import(name) 可被 Node 解析。最后登记到 features。
    */
   async featureInstall(name: string, version?: string): Promise<{ ok: boolean; features: string[]; message: string }> {
-    if (!/^cortico-world-qq-[a-z0-9-]+$/i.test(name)) throw new Error(`不是合法的 qq 功能包名：${name}`);
+    if (!/^hth-qq-[a-z0-9-]+$/i.test(name)) throw new Error(`不是合法的 qq 功能包名：${name}`);
     const spec = version ? `${name}@${version}` : name;
     const req = createRequire(join(this.packageDir, 'package.json'));
     // 已可在本地解析（已 link 部署 / 已安装）则跳过下载，仅启用。
@@ -658,7 +662,7 @@ export class QQWorld implements World, WorldBridge {
       { id: 'modules-view', title: '功能模块总览', description: '已加载功能包及其状态摘要。逐项配置见上方各分组面板。', group: 'world:qqbot', getMethods: ['getModules'] },
       { id: 'roster', title: '监听名单', description: '当前监听的群与私聊。', group: 'world:qqbot', getMethods: ['getRoster'] },
       { id: 'events', title: '实时事件', description: 'QQ 消息 / 通知的实时流（WebSocket 推送）。', group: 'world:qqbot' },
-      { id: 'feature-market', title: '功能模块市场', description: '从 npm 发现并安装 cortico-world-qq-* 功能包，与 Cortico 扩展市场一致。安装 / 移除后需重启生效。', group: 'world:qqbot' },
+      { id: 'feature-market', title: '功能模块市场', description: '从 npm 发现并安装 hth-qq-* 功能包，与 Cortico 扩展市场一致。安装 / 移除后需重启生效。', group: 'world:qqbot' },
     ];
 
     const invoke = async (panel: string, method: string, args: unknown[]): Promise<unknown> => {
@@ -802,12 +806,12 @@ export class QQWorld implements World, WorldBridge {
     }
   }
 
-  /** 已安装（cfg.features）功能包对应的模块 id 集合。功能包名 cortico-world-qq-<id> → id。 */
+  /** 已安装（cfg.features）功能包对应的模块 id 集合。功能包名 hth-qq-<id> → id。 */
   private installedModuleIds(): Set<string> {
     const set = new Set<string>();
     for (const n of this.cfg.features ?? []) {
       if (typeof n !== 'string') continue;
-      set.add(n.startsWith('cortico-world-qq-') ? n.slice('cortico-world-qq-'.length) : n);
+      set.add(n.startsWith('hth-qq-') ? n.slice('hth-qq-'.length) : n);
     }
     return set;
   }

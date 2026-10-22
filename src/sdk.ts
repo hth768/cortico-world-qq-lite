@@ -1,6 +1,6 @@
 /**
  * 功能包接线 SDK：把 QQHost 能力包装成功能包类熟悉的回调集合。
- * 功能包（cortico-world-qq-*）在 activate 里调用 createFeatureContext(host, id) 拿到：
+ * 功能包（hth-qq-*）在 activate 里调用 createFeatureContext(host, id) 拿到：
  *  - cfg：本模块在 worlds.qqbot.modules[id] 下的配置
  *  - log：带子名的框架 Logger
  *  - dataDir：持久化目录

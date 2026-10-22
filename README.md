@@ -20,7 +20,7 @@
       "wsHost": "0.0.0.0",
       "wsPort": 3001,
       "groups": [123456789],
-      "features": ["cortico-world-qq-sticker", "cortico-world-qq-voice"],
+      "features": ["hth-qq-sticker", "hth-qq-voice"],
       "modules": { "voice": { "enabled": true, "provider": "native" } }
     }
   }

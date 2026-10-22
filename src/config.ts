@@ -105,7 +105,7 @@ const conn: ConfigGroup = {
     { key: 'token', label: 'Access Token', type: 'string', default: '', description: 'NapCat 配置的 access_token，留空表示不校验。' },
     { key: 'selfName', label: '自称', type: 'string', default: '机器人', description: '用于提示词与 @ 识别。' },
     { key: 'timezone', label: '时区', type: 'string', default: 'Asia/Shanghai', description: '用于作息/时间相关提示词渲染。' },
-    { key: 'emojiDir', label: '表情目录', type: 'string', default: '', description: '存放表情包图片的目录（功能包 cortico-world-qq-sticker 使用）。' },
+    { key: 'emojiDir', label: '表情目录', type: 'string', default: '', description: '存放表情包图片的目录（功能包 hth-qq-sticker 使用）。' },
   ],
 };
 
@@ -156,7 +156,7 @@ const prompt: ConfigGroup = {
 const modules: ConfigGroup = {
   id: 'modules',
   title: '功能模块',
-  description: '列出要启用的功能包（npm 包名，例如 cortico-world-qq-sticker）。留空则只运行基础能力。功能包自身的配置见控制台「功能模块」页。',
+  description: '列出要启用的功能包（npm 包名，例如 hth-qq-sticker）。留空则只运行基础能力。功能包自身的配置见控制台「功能模块」页。',
   fields: [
     { key: 'features', label: '启用功能包', type: 'list', default: [], description: '动态加载并挂载的功能包清单。' },
   ],

@@ -1,7 +1,7 @@
 /**
  * cortico-world-qq-lite 公共类型与插件宿主 API。
  *
- * 功能包（cortico-world-qq-*）安装后，由本基础包在启动时按部署配置 `worlds.qqbot.features`
+ * 功能包（hth-qq-*）安装后，由本基础包在启动时按部署配置 `worlds.qqbot.features`
  * 列出的包名动态 import()，并调用其导出的 `activate(host)`。功能包通过 `host` 把配置段、
  * 事件处理器、提示词片段、环境变量、工具与生命周期钩子注册进 QQ 世界。
  *

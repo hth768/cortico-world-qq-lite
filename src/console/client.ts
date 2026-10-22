@@ -481,7 +481,7 @@ const modulesManagePanel: WebUiPanel = {
   },
 };
 
-// 功能模块市场：从 npm 发现并安装 cortico-world-qq-* 功能包（与 Cortico 扩展市场一致）。
+// 功能模块市场：从 npm 发现并安装 hth-qq-* 功能包（与 Cortico 扩展市场一致）。
 type FeatureHit = { name: string; version: string; description: string; keywords: string[]; npm: string; installed: boolean; enabled: boolean };
 
 const featureMarketPanel: WebUiPanel = {
@@ -491,7 +491,7 @@ const featureMarketPanel: WebUiPanel = {
     const sheet = ui.sheet({
       title: '功能模块市场',
       en: 'Feature Market',
-      desc: '从 npm 发现并安装 cortico-world-qq-* 功能包；已安装的包可启用 / 停用 / 卸载。改动后需重启进程生效。',
+      desc: '从 npm 发现并安装 hth-qq-* 功能包；已安装的包可启用 / 停用 / 卸载。改动后需重启进程生效。',
     });
     root.appendChild(sheet.el);
 
